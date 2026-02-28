@@ -1,60 +1,83 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, UserCircle, Building2, ShieldCheck, LogOut } from 'lucide-react';
 
 // Import the sub-pages (we will define these below)
 import StudentView from './components/StudentView';
 import RecruiterView from './components/RecruiterView';
 import AdminView from './components/AdminView';
+// @ts-ignore
+import LoginView from './components/LoginView';
 
 export default function MainDashboard() {
   const [activeRole, setActiveRole] = useState<'student' | 'recruiter' | 'admin'>('student');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+      setIsLoggedIn(true);
+      const saved = localStorage.getItem('role') as 'student'|'recruiter'|'admin' | null;
+      if (saved) setActiveRole(saved);
+    }
+  }, []);
+
+  const handleLogin = (role: 'student'|'recruiter'|'admin') => {
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('role', role);
+    setActiveRole(role);
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('role');
+    setIsLoggedIn(false);
+  };
+
+  if (!isLoggedIn) {
+    return <LoginView onLogin={handleLogin} />;
+  }
 
   return (
-    <div className="flex min-h-screen bg-slate-50 text-slate-900">
+    <div className="app-layout">
       {/* SIDEBAR */}
-      <aside className="w-64 bg-slate-900 text-white flex flex-col p-6">
-        <div className="mb-10 px-2">
-          <h1 className="text-xl font-bold text-blue-400">AI Placement ERP</h1>
-          <p className="text-xs text-slate-400">Version 1.0 (Protothon)</p>
+      <aside className="sidebar">
+        <div style={{marginBottom:24}}>
+          <h1 style={{fontSize:20,fontWeight:800,color:'var(--accent-50)'}}>AI Placement ERP</h1>
+          <p className="muted" style={{fontSize:12}}>Version 1.0 (Protothon)</p>
         </div>
 
-        <nav className="space-y-2 flex-1">
-          <button 
-            onClick={() => setActiveRole('student')}
-            className={`w-full flex items-center gap-3 p-3 rounded-lg transition ${activeRole === 'student' ? 'bg-blue-600' : 'hover:bg-slate-800'}`}
-          >
-            <UserCircle size={20} /> Student Portal
-          </button>
-          <button 
-            onClick={() => setActiveRole('recruiter')}
-            className={`w-full flex items-center gap-3 p-3 rounded-lg transition ${activeRole === 'recruiter' ? 'bg-blue-600' : 'hover:bg-slate-800'}`}
-          >
-            <Building2 size={20} /> Recruiter Portal
-          </button>
-          <button 
-            onClick={() => setActiveRole('admin')}
-            className={`w-full flex items-center gap-3 p-3 rounded-lg transition ${activeRole === 'admin' ? 'bg-blue-600' : 'hover:bg-slate-800'}`}
-          >
-            <ShieldCheck size={20} /> TPO Admin
-          </button>
+        <nav style={{display:'flex',flexDirection:'column',gap:8,flex:1}}>
+          {activeRole === 'student' && (
+            <button className="nav-btn active">
+              <UserCircle size={18} /> Student Portal
+            </button>
+          )}
+          {activeRole === 'recruiter' && (
+            <button className="nav-btn active">
+              <Building2 size={18} /> Recruiter Portal
+            </button>
+          )}
+          {activeRole === 'admin' && (
+            <button className="nav-btn active">
+              <ShieldCheck size={18} /> TPO Admin
+            </button>
+          )}
         </nav>
 
-        <div className="pt-6 border-t border-slate-800">
-          <button className="flex items-center gap-3 p-3 text-slate-400 hover:text-white transition">
-            <LogOut size={20} /> Logout
+        <div style={{paddingTop:20,borderTop:'1px solid rgba(255,255,255,0.06)'}}>
+          <button onClick={handleLogout} className="nav-btn">
+            <LogOut size={18} /> Logout
           </button>
         </div>
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 p-8 overflow-y-auto">
-        <header className="flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-          <h2 className="text-2xl font-bold capitalize">{activeRole} Dashboard</h2>
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-medium px-3 py-1 bg-blue-50 text-blue-600 rounded-full border border-blue-100">
-              Session: 2025-26
-            </span>
+      <main className="main">
+        <header className="card" style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:24}}>
+          <h2 style={{fontSize:20,fontWeight:700,textTransform:'capitalize'}}>{activeRole} Dashboard</h2>
+          <div>
+            <span className="badge">Session: 2025-26</span>
           </div>
         </header>
 
