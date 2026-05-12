@@ -70,12 +70,7 @@ AI-Integrated-Student-Campus-Placement-Management/
 - Schedule interviews and post results
 
 ---
-## 🙌 Acknowledgements
+That's all, folks! 🐾
 
-- Built with ❤️ for **Protothon Hackathon**
-- Inspired by the challenges faced in college campus placements across India
-- Thanks to all contributors and mentors who supported this project
 
----
 
-> **"Connecting students to opportunities, intelligently."**
